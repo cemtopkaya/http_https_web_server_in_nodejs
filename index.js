@@ -8,7 +8,7 @@
  $ openssl genrsa -passout pass:private_key_password -out key.pem
 
  > Sertifika istek dosyası oluşturuyoruz
- $openssl req -new -key key.pem -out csr.pem
+ $ openssl req -new -key key.pem -out csr.pem
 
  > Herkese açık sertifikayı istek formu ve gizli anahtar ile oluşturuyoruz
  $ openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem
@@ -20,6 +20,9 @@ const https = require("https");
 // HTTP Server: https://nodejs.org/en/knowledge/HTTP/servers/how-to-create-a-HTTP-server/
 const http = require("http");
 const fs = require("fs");
+const { execSync } = require("child_process");
+
+execSync(`openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes -passout pass:"sifre123" -keyout key.pem -out cert.pem -subj "/CN=localhost" -addext "subjectAltName=DNS:localhost,DNS:www.localhost.com,IP:127.0.0.1"`)
 
 const public_key = `-----BEGIN CERTIFICATE-----
 MIIDETCCAfkCFD41U1GvEWBU/ED8bLwJzexapQ/uMA0GCSqGSIb3DQEBCwUAMEUx
@@ -84,12 +87,12 @@ let gezegenler = [
 var writeResponse = function (req, res) {
   const { headers, method, url } = req;
   console.log(`>> İstek yapıldı : ${method} ${headers.host}${url}`);
-  let index = Math.round(Math.random(6) * 10);
+  let index = Math.floor(Math.random() * 10) % 7;
   res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
   res.end(`hello ${gezegenler[index]}`);
 };
 
-let hostname = "127.0.0.1",
+let hostname = "127.0.0.1", //"192.168.99.1",
   portHttp = 60000,
   portHttps = 60666;
 
@@ -98,10 +101,10 @@ http.createServer(writeResponse).listen(portHttp, hostname, () => {
 });
 
 const options = {
-  key: private_key,
-  cert: public_key,
-  // key: fs.readFileSync("key.pem"),
-  // cert: fs.readFileSync("cert.pem"),
+  // key: private_key,
+  // cert: public_key,
+  key: fs.readFileSync("key.pem"),
+  cert: fs.readFileSync("cert.pem"),
 };
 https.createServer(options, writeResponse).listen(portHttps, hostname, () => {
   console.log(`httpS Server running at httpS://${hostname}:${portHttps}/`);
