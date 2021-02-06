@@ -22,7 +22,9 @@ const http = require("http");
 const fs = require("fs");
 const { execSync } = require("child_process");
 
-execSync(`openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes -passout pass:"sifre123" -keyout key.pem -out cert.pem -subj "/CN=localhost" -addext "subjectAltName=DNS:localhost,DNS:www.localhost.com,IP:127.0.0.1"`)
+execSync(
+  `openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes -passout pass:"sifre123" -keyout key.pem -out cert.pem -subj "/CN=localhost" -addext "subjectAltName=DNS:localhost,DNS:www.localhost.com,IP:127.0.0.1"`
+);
 
 const public_key = `-----BEGIN CERTIFICATE-----
 MIIDETCCAfkCFD41U1GvEWBU/ED8bLwJzexapQ/uMA0GCSqGSIb3DQEBCwUAMEUx
@@ -74,38 +76,77 @@ f/c5KFLBWrHIIqIyAblBjPTupp+riZl6+I3CTDtxUcipz40lkdY=
 -----END RSA PRIVATE KEY-----
 `;
 
-let gezegenler = [
-  "merkür",
-  "mars",
-  "dünya",
-  "satürn",
-  "jüpiter",
-  "uranüs",
-  "neptun",
-];
-
 var writeResponse = function (req, res) {
+  const gezegenler = require("./gezegenler");
   const { headers, method, url } = req;
-  console.log(`>> İstek yapıldı : ${method} ${headers.host}${url}`);
+  console.log(
+    `${new Date()} >> İstek yapıldı : ${method} ${headers.host}${url}`
+  );
   let index = Math.floor(Math.random() * 10) % 7;
   res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
-  res.end(`hello ${gezegenler[index]}`);
+  res.end(`hello ${gezegenler[index]} - ${new Date()} `);
 };
 
 let hostname = "127.0.0.1", //"192.168.99.1",
   portHttp = 60000,
-  portHttps = 60666;
+  portHttps = 60666,
+  portTls = 60777;
 
+// ------------------------ HTTP ------------------------
 http.createServer(writeResponse).listen(portHttp, hostname, () => {
   console.log(`HTTP Server running at http://${hostname}:${portHttp}/`);
 });
 
+// ------------------------ HTTPS ------------------------
 const options = {
   // key: private_key,
-  // cert: public_key,
   key: fs.readFileSync("key.pem"),
+  // cert: public_key,
   cert: fs.readFileSync("cert.pem"),
+  ciphers: [
+    // "ECDHE-RSA-AES128-SHA256",
+    "DHE-RSA-AES128-SHA256",
+    "AES128-GCM-SHA256",
+    // "RC4",
+    // "HIGH",
+    // "!MD5",
+    // "!aNULL",
+  ].join(":"),
 };
 https.createServer(options, writeResponse).listen(portHttps, hostname, () => {
   console.log(`httpS Server running at httpS://${hostname}:${portHttps}/`);
 });
+
+// ------------------------ TLS ------------------------
+
+// const tls = require("tls");
+
+// const optionsTLS = {
+//   // Necessary only if the server requires client certificate authentication.
+//   key: fs.readFileSync("key.pem"),
+//   cert: fs.readFileSync("cert.pem"),
+
+//   // Necessary only if the server uses a self-signed certificate.
+//   ca: [fs.readFileSync("cert.pem")],
+
+//   // Necessary only if the server's cert isn't for "localhost".
+//   checkServerIdentity: () => {
+//     return null;
+//   },
+// };
+
+// const socket = tls.connect(portTls, optionsTLS, () => {
+//   console.log(
+//     "client connected",
+//     socket.authorized ? "authorized" : "unauthorized"
+//   );
+//   process.stdin.pipe(socket);
+//   process.stdin.resume();
+// });
+// socket.setEncoding("utf8");
+// socket.on("data", (data) => {
+//   console.log(data);
+// });
+// socket.on("end", () => {
+//   console.log("server ends connection");
+// });
