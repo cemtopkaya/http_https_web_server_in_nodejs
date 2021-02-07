@@ -56,4 +56,22 @@ Ancak trafik bu kez Pre-shared Master key'in çözümlenememesi
 ihtimaline karşın sunucunun kullandığı private key'in RSA key list
 içinde tanımlanmasıyla çözümlenebilir.
 
-![wireshark_https_decode](https://user-images.githubusercontent.com/261946/107133496-df740480-68f9-11eb-9e80-5516a4497eae.gif)
+![wireshark_https_decode](https://user-images.githubusercontent.com/261946/107133660-b94f6400-68fb-11eb-9407-61897e43355c.gif)
+
+Kaynaklar:
+- https://wiki.wireshark.org/TLS#Using_the_.28Pre.29-Master-Secret
+- https://superuser.com/questions/1551263/wireshark-is-not-decrypting-tls-traffic-from-an-exe-file
+- http://www.cncdesigner.com/wordpress/?p=6362
+- https://superuser.com/questions/1023583/what-does-a-sequence-of-retransmissions-with-psh-ack-flags-mean-and-a-spurious
+- https://osqa-ask.wireshark.org/questions/59621/psh-ack-fin-ack-psh-ack-rstack
+- https://www.comparitech.com/net-admin/decrypt-ssl-with-wireshark/
+- https://expeditedsecurity.com/blog/a-plus-node-js-ssl/
+- https://packetpushers.net/using-wireshark-to-decode-ssltls-packets/
+- https://unit42.paloaltonetworks.com/using-wireshark-display-filter-expressions/
+- https://support.citrix.com/article/CTX135889#:~:text=Open%20the%20trace%20in%20Wireshark,the%20private%20key)%20in%20Wireshark.
+- https://www.cloudflare.com/learning/ssl/what-happens-in-a-tls-handshake/
+- https://www.cellstream.com/reference-reading/tipsandtricks/453-decrypthttps-wireshark
+- https://www.youtube.com/watch?v=MQg48n9lV0s
+- https://en.wikiversity.org/wiki/Wireshark/Start
+- https://clcnetwork.wordpress.com/2020/05/03/ssh-tunneling-remote-wireshark/
+- https://www.digitalocean.com/community/tutorials/how-to-route-web-traffic-securely-without-a-vpn-using-a-socks-tunnel
