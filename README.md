@@ -18,8 +18,27 @@ Güvensiz bağlantı üstünde HTTP 1 standartı istek yapıyoruz. Wireshark biz
 
 ![image](https://user-images.githubusercontent.com/261946/107131865-8604d900-68eb-11eb-8f60-a82ef2a0eed4.png)
 
+İlk 3 paket TCP bağlantısının kurulması için: 
+- 3. paket) İstemciden (65271 portu) sunucuya (60000 portuna) SYN paketi gider (Synchronization, iki tarafın da veri gönderebildiği bağlantı), 
+- 4. paket) Sunucudan (60000) istemciye (65271) "SYN paketini kabul ettim" (ACK: Acknowledge) paketi cevabı verilir
+- 5. paket) İstemci bağlantının kurulduğunu sunucuya ACK paketiyle döner
+
+Veri transferi:
+- 6. paket) Merhabalaşıp sunucu (60000 portundan) veri istemciye (65271'e) veri gönderir. Bu Wireshark'ın sunucudan akan veriyi HTTP paketi olarak deşifre edilmiş gösterecek. 
+- 7. paket) İstemciden "gönderdiğin veriyi kabul ettim (ACK paketi)" sunucuya  döner
+
+Artık bağlantıyı kapatma zamanı. 4 Yönlü kapanış seromonisi:
+- 8. paket) Sunucu bağlantıyı sonlandırmak (FIN: Finalize) ister ve bunun için "ben bağlantıyı sonlandırdım artık veri göndermeyeceğim [FIN, ACK]" paketini istemciye gönderir
+- 9. paket) İstemci "sonlandırma isteğini kabul ettim [ACK]" diye sunucuya cevap döner. Artık sadece istemci veri gönderebilir
+- 10. paket) [FIN, ACK] ile istemciden sunucuya "ben bağlantıyı sonlandırmak istiyorum ve FIN,ACK paketinden sonra ben de bu bağlantı kanalına -sokete- veri yazamayacağım"mesajı gider 
+- 11. paket) Sunucu da artık soketi bu mesajla birlikte kapatmadan önce "kabul edildi" [ACK] mesajı gönderir
+
 
 ## HTTP 2.0 - Güvensiz
+
+HTTP2 Bağlantısını internet gezgini üstünden yaptığımızda HTTP 1.1 sürümüyle web sunucusuna istek yapılacak ancak web sunucusu doğrudan 2.0 ile cevap vereceği için yükseltme işlemi yapamayıp istek yanıtsız kalacak.
+
+![image](https://user-images.githubusercontent.com/261946/107139107-a3589800-6929-11eb-88c5-578ec24b66d2.png)
 
 Güvensiz bağlantı üstünde HTTP 2 standartı istek yapıyoruz. İletişimi TCP paketleri olarak görüyoruz.
 

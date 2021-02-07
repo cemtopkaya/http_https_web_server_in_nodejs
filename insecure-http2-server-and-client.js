@@ -1,5 +1,13 @@
-const http2 = require("http2");
+/**
+ * istemciyi de başlatmak için son parametre true olmalı.
+ * aksi halde sadece http2 web sunucusunu çalıştırır ve istekleri bekler
+ *
+ *   node insecure-http2-server-and-client.js true
+ *
+ * */
+const istemciyiCalistir = process.argv[2] == "true";
 
+const http2 = require("http2");
 //------------------------------------------------ Sunucu
 const server = http2.createServer();
 
@@ -19,26 +27,33 @@ server.on("stream", (stream, requestHeaders) => {
   stream.write(`hello ${gezegenler[index]}`);
   stream.end(` - ${new Date()}`);
 });
-server.listen(portHttp);
-
-
+server.listen(portHttp, hostname, () => {
+  console.log(
+    `\n****** http2 Web sunucu http://${hostname}:${portHttp} adresinden yayındadır ****\n`
+  );
+});
 
 //------------------------------------------------ istemci
-// const http2 = require('http2');
-const client = http2.connect(`http://${hostname}:${portHttp}`);
-const req = client.request({ ":method": "GET", ":path": "/" });
 
-req.on("response", (responseHeaders) => {
-  // do something with the headers
-  console.log(`${new Date()} >> [İstemci] - (on.response) :`, responseHeaders);
-});
+if (istemciyiCalistir) {
+  const client = http2.connect(`http://${hostname}:${portHttp}`);
+  const req = client.request({ ":method": "GET", ":path": "/" });
 
-req.on("data", (chunk) => {
-  // do something with the data
-  console.log(`${new Date()} >> [İstemci] - (on.data) : ${chunk}`);
-});
+  req.on("response", (responseHeaders) => {
+    // do something with the headers
+    console.log(
+      `${new Date()} >> [İstemci] - (on.response) :`,
+      responseHeaders
+    );
+  });
 
-req.on("end", () => {
-  console.log(`${new Date()} >> [İstemci] - (on.end)`);
-  client.destroy();
-});
+  req.on("data", (chunk) => {
+    // do something with the data
+    console.log(`${new Date()} >> [İstemci] - (on.data) : ${chunk}`);
+  });
+
+  req.on("end", () => {
+    console.log(`${new Date()} >> [İstemci] - (on.end)`);
+    client.destroy();
+  });
+}
