@@ -18,6 +18,14 @@ Güvensiz bağlantı üstünde HTTP 1 standartı istek yapıyoruz. Wireshark biz
 
 ![image](https://user-images.githubusercontent.com/261946/107131865-8604d900-68eb-11eb-8f60-a82ef2a0eed4.png)
 
+## TCP Üstünde Veri İletimi
+- Bağlantı kurulur
+- Veri iletilir
+- Bağlantı kapatılır
+
+![image](https://user-images.githubusercontent.com/261946/107140256-ea4a8b80-6931-11eb-8b81-2b2cefedd67d.png)
+
+### **3 Way Handshake**
 İlk 3 paket TCP bağlantısının kurulması için: 
 - [3] İstemciden (65271 portu) sunucuya (60000 portuna) SYN paketi gider (Synchronization, iki tarafın da veri gönderebildiği bağlantı), 
 - [4] Sunucudan (60000) istemciye (65271) "SYN paketini kabul ettim" (ACK: Acknowledge) paketi cevabı verilir
@@ -26,6 +34,27 @@ Güvensiz bağlantı üstünde HTTP 1 standartı istek yapıyoruz. Wireshark biz
 Veri transferi:
 - [6] Merhabalaşıp sunucu (60000 portundan) veri istemciye (65271'e) veri gönderir. Bu Wireshark'ın sunucudan akan veriyi HTTP paketi olarak deşifre edilmiş gösterecek. 
 - [7] İstemciden "gönderdiğin veriyi kabul ettim (ACK paketi)" sunucuya  döner
+
+
+### **Bağlantı bırakma**
+TCP bağlantısı ya "ani" veya "sorunsuz" olarak kapatılır. Bu örnekte bağlantıyı "sorunsuz" olacak şekilde kapatıyoruz.
+
+[TCP Connection Termination](https://www.geeksforgeeks.org/tcp-connection-termination/) 
+
+#### **1. Ani bağlantı bırakma**
+
+Bağlantıyı bir tarafın bir anda kapatması halidir.
+
+#### **2. Sorunsuz bağlantı bırakma**
+A Uç Noktası 
+|    Açıklama                                            | A Ucu  | Akışın Yönü | B Ucu |      Açıklama                                |
+| ----------------------------                           | ------ | ----------- | ----- | -----------------------------------------    |
+| Bağlantıyı kapatmak istiyorum                          | FIN    | ->          |       |                                              |
+|                                                        |        | <-          | ACK   | Paketini kabul ettim (Artık veri yazamazsın) |
+|                                                        |        | <-          | FIN   | Bağlantıyı kapatmak istiyorum                |
+| Sonlandırma isteğini aldım (Bağlantıyı kapatabilirsin) | ACK    | ->          |       |                                              |
+
+![image](https://user-images.githubusercontent.com/261946/107139784-de10ff00-692e-11eb-991f-4377e240b410.png)
 
 Artık bağlantıyı kapatma zamanı. 4 Yönlü kapanış seromonisi:
 - [8] Sunucu bağlantıyı sonlandırmak (FIN: Finalize) ister ve bunun için "ben bağlantıyı sonlandırdım artık veri göndermeyeceğim [FIN, ACK]" paketini istemciye gönderir
