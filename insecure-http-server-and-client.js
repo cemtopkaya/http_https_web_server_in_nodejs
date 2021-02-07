@@ -1,3 +1,12 @@
+/**
+ * istemciyi de başlatmak için son parametre true olmalı.
+ * aksi halde sadece http web sunucusunu çalıştırır ve istekleri bekler
+ *
+ *   node insecure-http-server-and-client.js true
+ *
+ * */
+const istemciyiCalistir = process.argv[2] == "true";
+
 //-------------------------------------------- Sunucu
 const http = require("http");
 
@@ -24,17 +33,20 @@ http.createServer(writeResponse).listen(portHttp, hostname, () => {
 });
 
 //------------------------------------------- istemci
-const req = http
-  .get(`http://${hostname}:${portHttp}`, (res) => {
-    console.log("---- on response : ");
 
-    let data = "";
+if (istemciyiCalistir) {
+  const req = http
+    .get(`http://${hostname}:${portHttp}`, (res) => {
+      console.log("---- on response : ");
 
-    res.on("data", (d) => {
-      data += d;
-    });
-    res.on("end", () => {
-      console.log(`${new Date()} >> [İstemci] - (Gelen veri) : ${data}`);
-    });
-  })
-  .end();
+      let data = "";
+
+      res.on("data", (d) => {
+        data += d;
+      });
+      res.on("end", () => {
+        console.log(`${new Date()} >> [İstemci] - (Gelen veri) : ${data}`);
+      });
+    })
+    .end();
+}
