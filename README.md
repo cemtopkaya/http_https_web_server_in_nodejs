@@ -39,3 +39,21 @@ Bu paketler TCP verileri olup içerisinde çeşitli protokollerin verilerini ta�
 Şimdi HTTP2 için tüm sürece bir daha bakalım ve paketlerin içeriğiyle birlikte isteğimizin sonucunu birlikte inceleyelim:
 
 ![wireshark_http2_decode](https://user-images.githubusercontent.com/261946/107132423-1218ff80-68f0-11eb-87c0-d9f43ee2dc81.gif)
+
+
+Chrome ile HTTPS sunucu arasındaki trafikte 
+pre-shared master key ssl-key.log dosyasında çözülür.
+
+Buna göre trafikte bulunan TCP paketleri HTTP paketlerine
+deşifre edilerek görüntülenir.
+
+Ancak bu akış curl ile HTTPS sunucu arasında şifreleme 
+yöntemlerinin transferinde AES gibi bir şifreleme yerine 
+ECDHE gibi deşifrelenmesi imkansız bir yöntemle 
+trafiğin başlatılmasına neden olabilir.
+
+Ancak trafik bu kez Pre-shared Master key'in çözümlenememesi
+ihtimaline karşın sunucunun kullandığı private key'in RSA key list
+içinde tanımlanmasıyla çözümlenebilir.
+
+![wireshark_https_decode](https://user-images.githubusercontent.com/261946/107133496-df740480-68f9-11eb-9e80-5516a4497eae.gif)

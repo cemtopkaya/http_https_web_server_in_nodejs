@@ -89,8 +89,7 @@ var writeResponse = function (req, res) {
 
 let hostname = "127.0.0.1", //"192.168.99.1",
   portHttp = 60000,
-  portHttps = 60666,
-  portTls = 60777;
+  portHttps = 60666;
 
 // ------------------------ HTTP ------------------------
 http.createServer(writeResponse).listen(portHttp, hostname, () => {
@@ -105,7 +104,13 @@ const options = {
   cert: fs.readFileSync("cert.pem"),
   ciphers: [
     // "ECDHE-RSA-AES128-SHA256",
-    "DHE-RSA-AES128-SHA256",
+    // "DHE-RSA-AES128-SHA256",
+    /** 
+     * Wireshark çözebilsin diye sadece bu şifrelemeyi 
+     * sunucu tarafında faal bırakıyorum. İstemci 21 farklı şifreleme yapabileceğini söyleyecek
+     * ancak sunucu sadece açıkta olanı istemcinin 21 şifreleme türü içinde görünce bununla devam
+     * etmek isteyecek 
+     */
     "AES128-GCM-SHA256",
     // "RC4",
     // "HIGH",
@@ -116,37 +121,3 @@ const options = {
 https.createServer(options, writeResponse).listen(portHttps, hostname, () => {
   console.log(`httpS Server running at httpS://${hostname}:${portHttps}/`);
 });
-
-// ------------------------ TLS ------------------------
-
-// const tls = require("tls");
-
-// const optionsTLS = {
-//   // Necessary only if the server requires client certificate authentication.
-//   key: fs.readFileSync("key.pem"),
-//   cert: fs.readFileSync("cert.pem"),
-
-//   // Necessary only if the server uses a self-signed certificate.
-//   ca: [fs.readFileSync("cert.pem")],
-
-//   // Necessary only if the server's cert isn't for "localhost".
-//   checkServerIdentity: () => {
-//     return null;
-//   },
-// };
-
-// const socket = tls.connect(portTls, optionsTLS, () => {
-//   console.log(
-//     "client connected",
-//     socket.authorized ? "authorized" : "unauthorized"
-//   );
-//   process.stdin.pipe(socket);
-//   process.stdin.resume();
-// });
-// socket.setEncoding("utf8");
-// socket.on("data", (data) => {
-//   console.log(data);
-// });
-// socket.on("end", () => {
-//   console.log("server ends connection");
-// });
